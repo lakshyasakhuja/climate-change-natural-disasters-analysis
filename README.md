@@ -1,41 +1,60 @@
-# climate-change-natural-disasters-analysis
-Research project analysing the impact of climate change on the frequency and intensity of natural disasters.
-
 # The Influence of Climate Change on the Frequency and Severity of Natural Disasters
 
-This repository contains an academic research project exploring how climate change is accelerating and intensifying natural disasters across the globe.
-The report examines scientific data, published literature, and climate models to understand emerging patterns in extreme weather events.
+This repository contains my DATA1001 (University of Sydney) research project, created using R and Quarto.
+The project investigates how climate change contributes to the increased frequency and intensity of natural disasters globally.
 
 ## 📘 Project Overview
 
-The research focuses on:
+This analysis explores:
 
-How rising global temperatures influence floods, cyclones, droughts, and wildfires
+Rising global temperatures and their link to extreme events
 
-IPCC-supported evidence of disaster escalation
+Trends in floods, cyclones, droughts, and wildfires
 
-Long-term environmental, economic, and social impacts
+Scientific reasoning supported by IPCC findings
 
-The need for adaptive strategies and climate-resilient infrastructure
+Environmental, social, and economic consequences
+
+The need for climate adaptation and resilience
+
+The project was developed using Quarto (QMD) in R, and exported into:
+
+.qmd source file
+
+.html rendered report
+
+.pdf formatted report
+
+All three formats are included in this repository.
 
 ## 🧠 Key Learnings
 
-Relationship between greenhouse gas emissions and disaster severity
+How climate variables influence natural disaster intensity
 
-Role of climate models in predicting extreme events
+Analytical and scientific writing aligned with academic expectations
 
-Evidence-based environmental analysis
+Experience using R, Quarto, and structured research workflows
 
-Academic writing and structured research communication
+Improved skills in environmental research, data reasoning, and report formatting
 
-## 🛠 Skills Demonstrated
+## 🛠 Tools & Technologies
 
-Environmental Research
+R
 
-Academic Writing
+Quarto (.qmd)
 
-Data Interpretation
+HTML Rendering
 
-Scientific Communication
+PDF/LaTeX Output
 
-Analytical Thinking
+Scientific Research + Report Writing
+
+## 🎓 Course Information
+
+Course: DATA1001 – Foundations of Data Science
+
+Institution: The University of Sydney
+
+Assessment Type: Research Project
+
+Semester: (add if you want)
