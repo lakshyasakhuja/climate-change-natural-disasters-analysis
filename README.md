@@ -7,23 +7,17 @@ The project investigates how climate change contributes to the increased frequen
 
 This analysis explores:
 
-Rising global temperatures and their link to extreme events
-
-Trends in floods, cyclones, droughts, and wildfires
-
-Scientific reasoning supported by IPCC findings
-
-Environmental, social, and economic consequences
-
-The need for climate adaptation and resilience
+- Rising global temperatures and their link to extreme events
+- Trends in floods, cyclones, droughts, and wildfires
+- Scientific reasoning supported by IPCC findings
+- Environmental, social, and economic consequences
+- The need for climate adaptation and resilience
 
 The project was developed using Quarto (QMD) in R, and exported into:
 
-.qmd source file
-
-.html rendered report
-
-.pdf formatted report
+- .qmd source file
+- .html rendered report
+- .pdf formatted report
 
 All three formats are included in this repository.
 
@@ -51,10 +45,10 @@ Scientific Research + Report Writing
 
 ## 🎓 Course Information
 
-Course: DATA1001 – Foundations of Data Science
-
 Institution: The University of Sydney
+
+Course: DATA1001 – Foundations of Data Science
 
 Assessment Type: Research Project
 
-Semester: (add if you want)
+Semester: Semester 1
