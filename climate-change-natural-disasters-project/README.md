@@ -1,6 +1,6 @@
 # The Influence of Climate Change on the Frequency and Severity of Natural Disasters
 
-This repository contains my **DATA1001 (Introduction to Data Science)** project from the **University of Sydney**, created using **R and Quarto**.
+This repository contains my **DATA1001 (Foundations of Data Science)** project from the **University of Sydney**, created using **R and Quarto**.
 
 The project investigates how climate change contributes to the increased frequency and intensity of natural disasters across the globe.
 
@@ -54,7 +54,8 @@ project_root/
 
 ## 🎓 Course Information
 
-- **Unit:** DATA1001 – Introduction to Data Science  
-- **University:** The University of Sydney  
+- **University:** The University of Sydney 
+- **Unit:** DATA1001 – Foundations of Data Science 
 - **Assessment Type:** Research Project
+- **Semester:** Semester 1
 
