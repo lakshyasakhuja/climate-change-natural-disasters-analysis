@@ -1,0 +1,303 @@
+---
+title: "The Influence of Climate Change on the Frequency and Severity of Natural Disasters"
+author: "540863213"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    code-fold: true
+---
+
+**UNIVERSITY OF SYDNEY \| DATA1001 \| PROJECT 2**
+
+# **👤** Client Bio and Recommendation
+
+**Organisation:** [United Nations Office for Disaster Risk Reduction (UNDRR)](https://www.undrr.org/) [(Linkedin)](https://www.linkedin.com/company/undrr)
+
+**Client**: [Paola Albrito, Director of the UNDRR](https://www.undrr.org/our-team/paola-albrito-biography) [(Linkedin)](https://www.linkedin.com/in/paola-albrito-91486145/?originalSubdomain=ch)
+
+**Bio**: The United Nations Office for Disaster Risk Reduction (UNDRR) coordinates global efforts to reduce disaster risks and build resilience against natural hazards. It supports countries in implementing the Sendai Framework, promoting strategies to minimize the impact of disasters worldwide. **Paola Albrito** is the Director of the UNDRR, leading global initiatives to strengthen resilience and reduce disaster risks. She advocates for the implementation of the Sendai Framework, promoting sustainable and risk-informed development worldwide.
+
+**Recommendation**:
+
+-   **Strengthen Disaster Preparedness and Response Systems in Highly Affected Areas**
+
+    -   Enhance early warnings, emergency protocols, and community training in high-risk areas to ensure effective, coordinated disaster response and minimize casualties.
+
+-   **Implement Targeted Mitigation Strategies for Specific Disaster Types**
+
+    -   Apply tailored measures like zoning, hazard mapping, and ecosystem management to reduce risks from specific disasters such as floods, earthquakes, or wildfires.
+
+-   **Enhance Climate-Resilient Infrastructure in Regions Prone to High-Casualty Disasters**
+
+    -   Build robust, adaptive infrastructure in vulnerable regions to withstand extreme weather, ensuring essential facilities stay operational during disasters.
+
+# 📝 Evidence
+
+```{r warnings = FALSE, message = FALSE, results='hide'}
+
+suppressPackageStartupMessages(library(tidyverse))
+library(grid)
+
+natural_disasters = read.csv("~/Downloads/natural-disasters.csv")
+
+# Scatter-Plot 
+
+# clean the data by removing rows with missing values in the specified columns
+cleaned_data = natural_disasters %>%
+  drop_na(Number.of.deaths.from.disasters, Number.of.total.people.affected.by.disasters) %>%
+  filter(Number.of.deaths.from.disasters > 0, Number.of.total.people.affected.by.disasters > 0)
+
+# convert the selected columns to numeric, ensuring proper data type for plotting
+cleaned_data$Number.of.deaths.from.disasters = as.numeric(cleaned_data$Number.of.deaths.from.disasters)
+cleaned_data$Number.of.total.people.affected.by.disasters = as.numeric(cleaned_data$Number.of.total.people.affected.by.disasters)
+
+# create a scatter plot with ggplot
+ggplot(cleaned_data, aes(x = Number.of.total.people.affected.by.disasters, y = Number.of.deaths.from.disasters)) +
+  geom_point(color = "blue", alpha = 0.7) + 
+  geom_smooth(method = "lm", se = FALSE, color = "red") + # add a linear regression line in red, without confidence interval
+  scale_x_log10() + scale_y_log10() + # apply log transformation to both axes
+  labs(
+    title = "Relationship Between People Affected and Disaster Casualties",
+    x = "Log (Total People Affected)", 
+    y = "Log (Number of Deaths)"
+  ) +
+  theme_minimal() 
+
+```
+
+The scatter plot reveals a clear positive relationship between the number of people affected by disasters and the number of casualties. This indicates that larger-scale disasters, which affect more people, tend to lead to higher fatalities. As climate change continues to intensify the frequency and scale of natural disasters, it is crucial for the UNDRR to prioritize enhancing disaster preparedness and response mechanisms in areas that are most vulnerable to such events. Early warning systems, emergency response plans, and resource allocation should be improved to minimize casualties during large-scale disasters.
+
+```{r}
+# Facet Grid Bar Graph
+
+disaster_types_over_time = natural_disasters %>%
+  select(Year, 
+         Number.of.deaths.from.drought, 
+         Number.of.deaths.from.earthquakes, 
+         Number.of.deaths.from.floods, 
+         Number.of.deaths.from.storms, 
+         Number.of.deaths.from.wildfires) %>%
+  
+  # reshape data to have a longer format, making disaster types a single column
+  pivot_longer(cols = -Year, 
+               names_to = "DisasterType", 
+               values_to = "Occurrences") %>%
+  
+  group_by(Year, DisasterType) %>%
+  summarize(Frequency = sum(Occurrences, na.rm = TRUE), .groups = "drop")
+
+# create a bar plot to visualize the frequency of different disaster types over time
+ggplot(disaster_types_over_time, aes(x = Year, y = Frequency, fill = DisasterType)) +
+  geom_bar(stat = "identity") + 
+  facet_wrap(~ DisasterType, scales = "free_y", ncol = 2) +
+  
+  labs(
+    title = "Frequency of Different Types of Natural Disasters Over Time",
+    x = "Year", # Label for x-axis
+    y = "Number of Occurrences" # Label for y-axis
+  ) +
+  
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8), 
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14), 
+    strip.text = element_text(size = 10, face = "bold"), 
+    panel.spacing = unit(1.5, "lines"), # increase space between panels
+    legend.position = "none" 
+  )
+
+```
+
+The facet grid bar graph shows the frequency of different types of natural disasters over time, highlighting that certain types, such as floods and storms, occur more frequently. This suggests that the impact of climate change may be leading to an increase in the frequency of specific disaster types. The UNDRR should use this insight to focus on targeted mitigation strategies for the most common disaster types, such as investing in flood defenses, storm surge barriers, and resilient infrastructure. Additionally, raising awareness and training communities on how to prepare for these more frequent disasters can help reduce the impact.
+
+```{r}
+# Box Plot
+
+casualty_data = natural_disasters %>%
+  select(Number.of.deaths.from.drought, 
+         Number.of.deaths.from.earthquakes, 
+         Number.of.deaths.from.floods, 
+         Number.of.deaths.from.storms, 
+         Number.of.deaths.from.wildfires) %>%
+  
+  # reshape data to have a longer format, where each row corresponds to a specific disaster type
+  pivot_longer(cols = everything(), 
+               names_to = "DisasterType", 
+               values_to = "Casualties") %>%
+  
+  drop_na(Casualties) %>%
+  filter(Casualties > 0)
+
+
+casualty_data$DisasterType <- gsub("Number.of.deaths.from.", "", casualty_data$DisasterType)
+
+# create a box plot to visualize the distribution of casualties for each type of natural disaster
+ggplot(casualty_data, aes(x = DisasterType, y = Casualties)) +
+  geom_boxplot(fill = "orange", alpha = 0.7, outlier.color = "red", outlier.size = 2) + 
+  scale_y_log10() + 
+  labs(
+    title = "Distribution of Casualties Across Different Types of Natural Disasters",
+    x = "Type of Disaster",
+    y = "Number of Deaths (Log Scale)" 
+  ) +
+
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis labels for better readability
+    plot.title = element_text(hjust = 0.5, face = "bold") # Center and style the title
+  )
+
+```
+
+The box plot illustrates the distribution of casualties across different disaster types, showing that some disasters, such as earthquakes and floods, tend to have a wider range of impacts with potentially higher casualties. Given that climate change can exacerbate the conditions that lead to severe disasters, it is essential to focus on building climate-resilient infrastructure in regions where high-casualty disasters are more likely. This could include strengthening buildings against earthquakes, improving drainage systems to handle floods, and ensuring that critical infrastructure like hospitals and shelters are equipped to withstand extreme events.
+
+# [🖊️](https://emojipedia.org/pen) Appendix: Defense of Approach
+
+Paola Albrito, Director of the UNDRR, was chosen as the client because of her focus on disaster risk reduction. Since the project topic is "The Influence of Climate Change on the Frequency and Severity of Natural Disasters," it made sense to address someone leading efforts to reduce disaster impacts worldwide. Choosing her as the client shaped the report to highlight how climate change affects disaster risks and the importance of global strategies to manage these risks. The content was tailored to provide clear insights and recommendations that align with the UNDRR’s goals of reducing the impact of disasters.
+
+The topic, **"The Influence of Climate Change on the Frequency and Severity of Natural Disasters,"** required diverse methods to provide comprehensive insights:
+
+1.  **Scatter Plot with Log Transformation**:
+
+    -   **Purpose**: To analyze the relationship between the total number of people affected and disaster casualties.
+
+    -   **Rationale**: Natural disaster data can be highly skewed, with extreme values. Log transformation helps normalize this, revealing clearer trends. The scatter plot with a regression line shows the correlation, aiding in understanding how widespread disasters impact casualties, essential for improving preparedness.
+
+2.  **Facet Grid Bar Graph (Frequency Over Time)**:
+
+    -   **Purpose**: To display the frequency of various disaster types over time.
+
+    -   **Rationale**: This allows for comparing trends across disaster types, highlighting which have become more common, possibly due to climate change. It informs where focused mitigation efforts are needed.
+
+3.  **Box Plot (Distribution of Casualties)**:
+
+    -   **Purpose**: To show the spread of casualties across different disaster types.
+
+    -   **Rationale**: The box plot highlights the variability and outliers, helping identify which disasters tend to be deadlier. This supports prioritizing resources for high-casualty disaster types.
+
+    ### **HATPC:**
+
+    **H - Hypotheses**
+
+    **Null Hypothesis (H~0~):** There is no significant correlation between the total number of people impacted by natural disasters and the number of fatalities. In simpler terms, the regression line has a slope of zero.
+
+    **Alternative Hypothesis (H~1~):** There is a strong correlation between the total number of people impacted by natural disasters and the number of fatalities. This means that the regression line has a slope that is not zero.
+
+    ### **A - Assumptions**
+
+    For the linear regression analysis, the following assumptions are made:
+
+    1.  **Linearity**: The linear relationship exists between the total number of people affected when log-transformed and the number of deaths when log-transformed. The scatter plot was used for visual assessment.
+
+    2.  **Independence**: The observations are independent of each other, implying that the data points do not influence one another.
+
+    3.  **Homoscedasticity**: It implies that the errors' variance remains constant regardless of the predictor variable's level.
+
+    4.  **Normality of Residuals**: Residuals should follow a roughly normal distribution to be considered normal.
+
+    5.  **No Multicollinearity**: There is no problem with multicollinearity in this basic linear regression model with only one predictor.
+
+```{r warnings = FALSE,message=FALSE,results='hide'}
+library(tidyverse)
+
+# prepare the dataset for regression analysis
+linear_model_data = cleaned_data %>%
+  filter(Number.of.total.people.affected.by.disasters > 0, Number.of.deaths.from.disasters > 0)
+
+lm_model = lm(log(Number.of.deaths.from.disasters) ~ log(Number.of.total.people.affected.by.disasters), data = linear_model_data)
+
+summary(lm_model)
+
+# the regression line on the scatter plot
+ggplot(linear_model_data, aes(x = log(Number.of.total.people.affected.by.disasters), y = log(Number.of.deaths.from.disasters))) +
+  geom_point(color = "blue", alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  labs(
+    title = "Linear Regression Model: Log-Transformed Data",
+    x = "Log (Total People Affected)",
+    y = "Log (Number of Deaths)"
+  ) +
+  theme_minimal()
+
+par(mfrow = c(2, 2))  # Arrange plots in a 2x2 grid
+plot(lm_model)
+
+
+```
+
+### 
+
+### **T - Test Statistic**
+
+The linear regression model output provides the following:
+
+1.  **Slope (Estimate for `log(Number.of.total.people.affected.by.disasters)`)**: 0.5166
+
+    -   This means that, on a log scale, for every 1% increase in the number of people affected by disasters, the number of deaths is expected to increase by approximately 0.52%.
+
+2.  **t-value**: 21.525
+
+    -   A high t-value suggests that the slope coefficient is far from zero.
+
+3.  **P-value**: `< 2e-16` (extremely small)
+
+    -   The p-value is significantly less than the common significance level (α=0.05\alpha = 0.05α=0.05), providing strong evidence to reject the null hypothesis.
+
+### **P - P-value and Significance**
+
+-   **P-value: `< 2e-16`**
+
+-   Since the p-value is significantly below 0.05, we can reject the null hypothesis. This suggests a notable correlation between the total number of individuals impacted by disasters and the number of fatalities.
+
+-   **R-squared: 0.3184**
+
+    -   The R-squared value suggests that around 31.8% of the variance in death tolls can be attributed to the variance in the total number of disaster-affected individuals. Although a correlation is observed, the R-squared value indicates that there are likely other variables affecting the death rate, and the model could benefit from the incorporation of more factors.
+
+### **C - Conclusion**
+
+**Based on the results of the linear regression analysis, we conclude the following:**
+
+1.  There is a **significant positive relationship** between the number of people affected by natural disasters and the number of deaths. The p-value (\< 2e-16) strongly supports this finding.
+
+2.  A **slope of 0.5166** suggests that when the quantity of people impacted by disasters rises, the number of deaths also generally rises, based on a log-transformed scale. This implies that disasters affecting more people are typically linked to increased casualties.
+
+3.  However, the **R-squared value (0.3184)** shows that this predictor by itself does not completely account for the variability in the number of deaths. Disaster preparedness, geographical location, and type of disaster can also have significant impacts on the severity of fatalities.
+
+### Limitations
+
+The analysis had a few limitations. First, the **data might have gaps or be inconsistent**, as disaster reporting varies by region. Second, the **R-squared value was low**, meaning other factors (like preparedness or infrastructure) affect casualty rates and weren't included in the model. Using a **log transformation** helped handle extreme values but might have hidden some details. Lastly, the study didn't account for **geographic differences**, so patterns may vary across different regions.
+
+# ⚖️ Ethics Statement
+
+In conducting this analysis, the following ethical guidelines have been adhered to:
+
+**Shared Value: Professional Integrity**\
+Throughout the analysis, accuracy, transparency, and honesty were maintained. Data sources were responsibly handled, and unbiased statistical methods were applied. This approach ensures trust and credibility, crucial for informed policy decisions.
+
+**Ethical Principle: Respect for Data Confidentiality**\
+The analysis respected data confidentiality, using publicly available data without disclosing sensitive information. Results were presented in aggregate, protecting privacy while providing reliable insights. This ethical foundation supports responsible disaster risk analysis for organizations like the UNDRR.
+
+These guidelines ensure that findings are trustworthy and useful for stakeholders in disaster risk reduction.
+
+# 🤝 Acknowledgements
+
+**Allen, M. R., Dube, O. P., Solecki, W., Aragón-Durand, F., & Cramer, W. (2018).**\
+<https://www.ipcc.ch/report/sr15/>\
+This report from the Intergovernmental Panel on Climate Change (IPCC) highlights how climate change increases the frequency and severity of natural disasters. The study provides insights on how global warming affects weather patterns, making events like heatwaves, floods, and storms more extreme and unpredictable.
+
+Coumou, Dim, and Stefan Rahmstorf. “A Decade of Weather Extremes.” Nature Climate Change, vol. 2, no. 7, July 2012, pp. 491–496, <https://nature.com/articles/nclimate1452> <https://doi.org/10.1038/nclimate1452>.
+
+**Articles and Blogs:**\
+<https://pmc.ncbi.nlm.nih.gov/articles/PMC6069477/>\
+<https://earthobservatory.nasa.gov/features/RisingCost/rising_cost5.php>\
+<https://knowledge.aidr.org.au/resources/natural-hazards-and-climate-change/>\
+\
+**Removing Warnings:** [https://stackoverflow.com/questions/45399587/how- to-remove-warning](https://stackoverflow.com/questions/45399587/how-to-remove-warning-messages-in-r-markdown-document)
+
+**Data Cleaning:** <https://stackoverflow.com/questions/45527598/data-cleaning-with-r>\
+<https://www.geeksforgeeks.org/data-cleaning-in-r/>
+
+**Ed Posts:**\
+<https://edstem.org/au/courses/16787/discussion/2285233>\
+<https://edstem.org/au/courses/16787/discussion/2301513>
